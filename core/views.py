@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
+from core.forms import LoginForm
 from core.models import News, Category, Comment
 
 
@@ -64,17 +65,19 @@ def create_comment_ajax(request):
 def login_profile(request):
     if request.user.is_authenticated:
         return redirect('/')
+    form = LoginForm()
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        if username == '' or password == '':
-            return render(request, 'auth/login.html', {'message': 'Enter required fields'})
-        user = authenticate(username=username, password=password)
-        if user:
-            login(request, user)
-            return redirect('/')
-        return render(request, 'auth/login.html', {'message': 'The user is not found or invalid password'})
-    return render(request, 'auth/login.html')
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                return redirect('/')
+            return render(request, 'auth/login.html', {
+                'message': 'The user is not found or invalid password', 'form': form})
+    return render(request, 'auth/login.html', {'form': form})
 
 
 def logout_profile(request):

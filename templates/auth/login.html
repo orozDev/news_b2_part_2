@@ -4,20 +4,38 @@
 {% block title %}| Login{% endblock title %}
 
 {% block content %}
+
+    <style>
+
+        #login_form ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+    </style>
+
     <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh">
         <div class="card" style="min-width: 400px">
             <div class="card-body">
-                <form action="{% url 'login' %}" method="POST">
+                <form action="{% url 'login' %}" id="login_form" method="POST" novalidate>
                     {% csrf_token %}
                     <div class="mb-4">
-                        <input type="text" name="username" class="form-control" placeholder="Enter username" >
+                        {{ form.username }}
+                        <div class="text-danger">
+                            {{ form.username.errors }}
+                        </div>
                     </div>
                     <div class="mb-4">
-                        <input type="password" name="password" class="form-control" placeholder="Enter paswword" >
+                        {{ form.password }}
+                         <div class="text-danger">
+                            {{ form.password.errors }}
+                        </div>
                     </div>
                     <div>
                         <button type="submit" class="btn btn-primary d-block w-100">Login</button>
                     </div>
+
                     {% if message %}
                         <div class="mt-4 text-danger text-center">
                             <i class="fa-solid fa-circle-exclamation"></i> {{ message }}
