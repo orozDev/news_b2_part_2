@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}| {{ request.user.username }}{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-4">{{ request.user.get_full_name }} - {{ request.user.username }}</h4>
+                <ul class="mb-3">
+                    <li><b>Email:</b> {{ request.user.email }}</li>
+                    <li><b>Last login:</b> {{ request.user.last_login }}</li>
+                    <li><b>Is Active:</b> {{ request.user.is_active }}</li>
+                    <li><b>Is Superuser:</b> {{ request.user.is_superuser }}</li>
+                </ul>
+                <div class="text-end">
+                     <a href="{% url 'change_password' %}" class="btn btn-primary">Change password</a>
+                    <a href="{% url 'change_profile' %}" class="btn btn-success">Change profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
