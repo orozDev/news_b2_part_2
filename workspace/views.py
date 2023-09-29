@@ -1,9 +1,8 @@
-from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils import timezone
 
 from core.models import News, Category, Tag, Comment
+from workspace.forms import NewsForm
 
 
 def workspace(request):
@@ -82,85 +81,34 @@ def delete_category(request, id):
 
 def create_news(request):
     if request.user.is_authenticated:
+        form = NewsForm()
         if request.method == 'POST':
-            name = request.POST.get('name')
-            description = request.POST.get('description')
-            content = request.POST.get('content')
-            image = request.FILES.get('image')
-            tags = Tag.objects.filter(id__in=list(map(int, request.POST.getlist('tags'))))
-            category = Category.objects.get(id=int(request.POST.get('category')))
-            is_published = request.POST.get('is_published')
-            date = timezone.now()
-            author = request.user
-
-            print(is_published, name, image, request.POST.getlist('tags'))
-
-            newsImageSystem = FileSystemStorage('media/news_images/')
-            newsImageSystem.save(image.name, image)
-
-            news = News.objects.create(
-                name=name,
-                description=description,
-                content=content,
-                category=category,
-                date=date,
-                author=author,
-                image=image,
-                is_published=is_published == 'on',
-            )
-
-            for tag in tags:
-                news.tags.add(tag)
-
-            return redirect('/workspace/')
-
-        tags = Tag.objects.all()
-        categories = Category.objects.all()
-        return render(request, 'workspace/create_news.html', {
-            'tags': tags,
-            'categories': categories
-        })
-
+            form = NewsForm(request.POST, request.FILES)
+            if form.is_valid():
+                news = form.save(commit=False)
+                news.author = request.user
+                news.save()
+                return redirect('/workspace/')
+        return render(request, 'workspace/create_news.html', {'form': form})
     return redirect('/')
 
 
 def update_news(request, id):
     news = get_object_or_404(News, id=id)
+    form = NewsForm(instance=news)
     if request.user.is_authenticated:
         if request.method == 'POST':
-            news.name = request.POST.get('name')
-            news.description = request.POST.get('description')
-            news.content = request.POST.get('content')
-            news.category = Category.objects.get(id=int(request.POST.get('category')))
-            news.is_published = request.POST.get('is_published') == 'on'
-
-            image = request.FILES.get('image')
-            tags = Tag.objects.filter(id__in=list(map(int, request.POST.getlist('tags'))))
-
-            for tag in news.tags.all():
-                news.tags.remove(tag)
-
-            for tag in tags:
-                news.tags.add(tag)
-
-            if image:
-                newsImageSystem = FileSystemStorage('media/news_images/')
-                newsImageSystem.delete(news.image)
-                newsImageSystem.save(image.name, image)
-                news.image = image
-
-            news.save()
-            return redirect(f'/workspace/news/{news.id}/')
-
-        tags = Tag.objects.all()
-        categories = Category.objects.all()
+            form = NewsForm(request.POST, request.FILES, instance=news)
+            if form.is_valid():
+                form.save()
+                return redirect(f'/workspace/news/{id}/')
         return render(request, 'workspace/update_news.html', {
+            'form': form,
             'news': news,
-            'tags': tags,
-            'categories': categories
         })
 
     return redirect('/')
+
 
 def list_of_tags(request):
     if request.user.is_authenticated:
@@ -228,4 +176,3 @@ def delete_comment(request, id):
         comment.delete()
         return redirect(f'/workspace/news/{news_id}/')
     return redirect('/')
-

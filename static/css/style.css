@@ -13,3 +13,7 @@ main {
 .card {
     height: 100%;
 }
+
+ul.errorlist li {
+   color: red;
+}
