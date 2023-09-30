@@ -17,5 +17,5 @@ urlpatterns = [
     path('tags/create/', views.create_tag, name='workspace_create_tag'),
     path('tags/<int:id>/update/', views.update_tag, name='workspace_update_tag'),
     path('tags/<int:id>/delete/', views.delete_tag, name='workspace_delete_tag'),
-    path('comments/<int:id>/delete/', views.delete_comment, name='workspace_delete_comment'),
+    path('ajax/comments/<int:id>/delete/', views.delete_comment, name='workspace_delete_comment'),
 ]

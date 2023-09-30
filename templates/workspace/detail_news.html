@@ -45,12 +45,12 @@
                 </div>
                 <div id="commentContainer">
                     {% for comment in comments %}
-                        <div class="card mb-3">
+                        <div class="card mb-3" id="comment_block_{{ comment.id }}">
                             <div class="card-body">
                                 <h5 class="card-title">{{ comment.name }}</h5>
                                 <p class="card-text">{{ comment.text }}</p>
                                  <h6 class="card-subtitle mb-2 text-muted text-end">{{ comment.date }}</h6>
-                                 <a align='end' href="{% url 'workspace_delete_comment' id=comment.id %}" class="btn btn-danger ">Delete</a>
+                                 <button class="btn btn-danger" onclick="deleteComment({{ comment.id }})">Delete</button>
                             </div>
                         </div>
                     {% endfor %}

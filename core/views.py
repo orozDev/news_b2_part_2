@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import render, get_object_or_404, redirect
 
 from core.forms import LoginForm
@@ -51,10 +51,11 @@ def create_comment_ajax(request):
 
     new_comment = Comment.objects.create(
         news=news,
-        name=text,
+        name=name,
         text=text,
     )
     return JsonResponse({
+        'id': new_comment.id,
         'news': new_comment.news.id,
         'name': new_comment.name,
         'text': new_comment.text,
@@ -148,3 +149,18 @@ def change_password(request):
 
 
 # Create your views here.
+def login_ajax(request):
+    if request.user.is_authenticated:
+        return HttpResponseForbidden()
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                return JsonResponse({'isAuthenticated': True}, status=200)
+            return JsonResponse({'isAuthenticated': False, 'message': 'The user is not found or invalid password', },
+                                status=400)
+    return HttpResponseNotAllowed

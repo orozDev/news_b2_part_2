@@ -12,9 +12,9 @@ document.forms.createComment.addEventListener('submit', e => {
         '/ajax/create_comment/',
         {
             method: 'POST',
-              headers:{
-                  'Accept': 'application/json'
-              },
+            headers: {
+                'Accept': 'application/json'
+            },
             body
         }
     ).then(res => res.json())
@@ -25,15 +25,33 @@ document.forms.createComment.addEventListener('submit', e => {
         })
         .then(res => {
             const commentContainer = document.querySelector('#commentContainer')
-            commentContainer.innerHTML += `
-                  <div class="card mb-3">
+            commentContainer.innerHTML = `
+                  <div class="card mb-3" id="comment_block_${res.id}">
                         <div class="card-body">
                             <h5 class="card-title">${res.name}</h5>
                             <p class="card-text">${res.text}</p>
-                             <h6 class="card-subtitle mb-2 text-muted text-end">${res.date}</h6>
+                            <h6 class="card-subtitle mb-2 text-muted text-end">${res.date}</h6>
+                           <button class="btn btn-danger" onclick="deleteComment(${res.id})">Delete</button>
                         </div>
                   </div>
-            `
+            ` + commentContainer.innerHTML
         }).finally(res => btn.innerHTML = 'Add this comment')
 
 })
+
+
+const deleteComment = async (commentId) => {
+
+    const res = await fetch(`/workspace/ajax/comments/${commentId}/delete/`)
+    if (res.status === 200) {
+        const data = await res.json()
+        if (data.isDeleted) {
+             const commentBlock = document.querySelector(`#comment_block_${commentId}`)
+            commentBlock.remove()
+        }
+    } else {
+        alert('Network error or unauthorized')
+    }
+
+
+}

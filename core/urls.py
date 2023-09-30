@@ -15,4 +15,6 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/change_profile/', views.change_profile, name='change_profile'),
     path('profile/change_password/', views.change_password, name='change_password'),
+
+    path('ajax/login/', views.login_ajax, name='login_ajax'),
 ]

@@ -1,0 +1,26 @@
+ <div class="modal fade" id="loginModalWin" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="#" id="login_form" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <input type="text" name="username" placeholder="Enter username" class="form-control" required>
+                        </div>
+                        <div class="mb-4">
+                            <input type="password" name="password" placeholder="Enter password" class="form-control" required>
+                        </div>
+                        <div class="text-danger text-center" id="login_form_message"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="login_form" class="btn btn-primary">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator
+from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 
 from core.models import News, Category, Tag, Comment
@@ -172,7 +173,6 @@ def delete_news(request, id):
 def delete_comment(request, id):
     if request.user.is_authenticated:
         comment = get_object_or_404(Comment, id=id)
-        news_id = comment.news.id
         comment.delete()
-        return redirect(f'/workspace/news/{news_id}/')
-    return redirect('/')
+        return JsonResponse({'isDeleted': True})
+    return HttpResponseForbidden()
