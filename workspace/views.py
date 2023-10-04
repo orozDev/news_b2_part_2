@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 
 from core.models import News, Category, Tag, Comment
 from workspace.forms import NewsForm
@@ -45,8 +46,12 @@ def create_category(request):
         if request.method == 'POST':
             name = request.POST.get('name', None)
             if name is None or name == '':
+                messages.error(request, 'Name is required')
                 return render(request, 'workspace/create_category.html', {'message': 'Name is required'})
             category = Category.objects.create(name=name)
+
+            messages.success(request, f'The category "{category.name}" has been added successfully!')
+
             return redirect('/workspace/categories/')
 
         return render(request, 'workspace/create_category.html')
@@ -59,6 +64,7 @@ def update_category(request, id):
         if request.method == 'POST':
             name = request.POST.get('name', None)
             if name is None or name == '':
+                messages.error(request, 'Name is required')
                 return render(request, 'workspace/update_category.html', {
                     'message': 'Name is required',
                     'category': category,
@@ -66,6 +72,7 @@ def update_category(request, id):
 
             category.name = name
             category.save()
+            messages.success(request, f'The category "{name}" ha been updated successfully!')
             return redirect('/workspace/categories/')
 
         return render(request, 'workspace/update_category.html', {'category': category})
@@ -75,7 +82,9 @@ def update_category(request, id):
 def delete_category(request, id):
     if request.user.is_authenticated:
         category = get_object_or_404(Category, id=id)
+        name = category.name
         category.delete()
+        messages.success(request, f'The category "{name}" ha been deleted successfully!')
         return redirect('/workspace/categories/')
     return redirect('/')
 

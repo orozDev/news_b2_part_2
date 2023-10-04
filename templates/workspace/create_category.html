@@ -3,14 +3,13 @@
 {% block title %}| Create new category{% endblock title %}
 
 {% block work_content %}
-
     <h3 class="mb-4">Create new category:</h3>
     <div>
         <form action="{% url 'workspace_create_category' %}" method="POST">
             {% csrf_token %}
             <div class="mb-3">
                 <lable for="name_input">Name <span class="text-danger">*</span></lable>
-                <input type="text" name="name" id="name_input"  class="form-control">
+                <input type="text" name="name" id="name_input" class="form-control">
             </div>
             <div>
                 <button type="submit" class="btn btn-primary d-block w-100">Create</button>
