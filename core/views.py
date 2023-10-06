@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import render, get_object_or_404, redirect
 
+from core.filters import NewsFilter
 from core.forms import LoginForm
 from core.models import News, Category, Comment
 
@@ -18,13 +19,15 @@ def main(request):
     if tag:
         news = news.filter(tags__id=tag).order_by('-id')
 
+    filter_set = NewsFilter(request.GET, queryset=news)
+
     offset = request.GET.get('offset', 1)
     limit = request.GET.get('limit', 12)
 
-    paginator = Paginator(news, limit)
+    paginator = Paginator(filter_set.qs, limit)
     news = paginator.get_page(offset)
 
-    return render(request, 'index.html', {'news_list': news})
+    return render(request, 'index.html', {'news_list': news, 'filter': filter_set})
 
 
 def detail_news(request, id):
