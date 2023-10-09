@@ -9,7 +9,7 @@ from workspace.decorators import login_required_custom
 from workspace.forms import NewsForm
 
 
-@login_required_custom
+@login_required(login_url='/login/')
 def workspace(request):
     news = News.objects.filter(author=request.user).order_by('-id')
     offset = request.GET.get('offset', 1)
@@ -19,7 +19,7 @@ def workspace(request):
     return render(request, 'workspace/index.html', {'news_list': news})
 
 
-@login_required_custom
+@login_required(login_url='/login/')
 def list_of_categories(request):
         categories = Category.objects.all().order_by('-id')
         offset = request.GET.get('offset', 1)
@@ -29,7 +29,7 @@ def list_of_categories(request):
         return render(request, 'workspace/categories.html', {'categories': categories})
 
 
-@login_required_custom
+@login_required(login_url='/login/')
 def detail_news(request, id):
     news = get_object_or_404(News, id=id, author=request.user)
     comments = Comment.objects.filter(news=news)
@@ -40,7 +40,7 @@ def detail_news(request, id):
     return render(request, 'workspace/detail_news.html', {'news': news, 'comments': comments})
 
 
-@login_required_custom
+@login_required(login_url='/login/')
 def create_category(request):
     if request.method == 'POST':
         name = request.POST.get('name', None)
@@ -56,8 +56,7 @@ def create_category(request):
     return render(request, 'workspace/create_category.html')
 
 
-
-@login_required_custom
+@login_required(login_url='/login/')
 def update_category(request, id):
     category = get_object_or_404(Category, id=id)
     if request.method == 'POST':
@@ -77,7 +76,7 @@ def update_category(request, id):
     return render(request, 'workspace/update_category.html', {'category': category})
 
 
-@login_required_custom
+@login_required(login_url='/login/')
 def delete_category(request, id):
     category = get_object_or_404(Category, id=id)
     name = category.name
@@ -86,7 +85,7 @@ def delete_category(request, id):
     return redirect('/workspace/categories/')
 
 
-@login_required_custom
+@login_required(login_url='/login/')
 def create_news(request):
     form = NewsForm()
     if request.method == 'POST':
@@ -99,7 +98,7 @@ def create_news(request):
     return render(request, 'workspace/create_news.html', {'form': form})
 
 
-@login_required_custom
+@login_required(login_url='/login/')
 def update_news(request, id):
     news = get_object_or_404(News, id=id)
     form = NewsForm(instance=news)
@@ -114,7 +113,7 @@ def update_news(request, id):
     })
 
 
-@login_required_custom
+@login_required(login_url='/login/')
 def list_of_tags(request):
     tags = Tag.objects.all().order_by('-id')
     offset = request.GET.get('offset', 1)
@@ -136,7 +135,7 @@ def create_tag(request):
     return render(request, 'workspace/create_tag.html')
 
 
-@login_required_custom
+@login_required(login_url='/login/')
 def update_tag(request, id):
     tag = get_object_or_404(Tag, id=id)
     if request.method == 'POST':

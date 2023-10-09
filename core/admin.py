@@ -38,12 +38,12 @@ class NewsAdminForm(forms.ModelForm):
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'category', 'date', 'author', 'is_published', 'get_image')
+    list_display = ('id', 'name', 'category', 'date', 'author', 'views', 'is_published', 'get_image')
     list_display_links = ('id', 'name')
     search_fields = ('id', 'name', 'content', 'description')
     list_filter = ('date', 'category', 'tags', 'author',)
     list_editable = ('is_published',)
-    readonly_fields = ('get_big_image',)
+    readonly_fields = ('get_big_image', 'views',)
     form = NewsAdminForm
 
     @admin.display(description='Обложка')

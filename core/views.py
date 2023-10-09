@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import render, get_object_or_404, redirect
 
+from core.decorators import increase_views
 from core.filters import NewsFilter
 from core.forms import LoginForm
 from core.models import News, Category, Comment
@@ -22,7 +23,7 @@ def main(request):
     filter_set = NewsFilter(request.GET, queryset=news)
 
     offset = request.GET.get('offset', 1)
-    limit = request.GET.get('limit', 12)
+    limit = request.GET.get('limit', 3)
 
     paginator = Paginator(filter_set.qs, limit)
     news = paginator.get_page(offset)
@@ -30,6 +31,7 @@ def main(request):
     return render(request, 'index.html', {'news_list': news, 'filter': filter_set})
 
 
+@increase_views
 def detail_news(request, id):
     news = get_object_or_404(News, id=id, is_published=True)
     comments = Comment.objects.filter(news=news)
@@ -70,6 +72,10 @@ def login_profile(request):
     if request.user.is_authenticated:
         return redirect('/')
     form = LoginForm()
+    if request.session.get('next_link', None) is None:
+        request.session.modified = True
+        request.session['next_link'] = request.GET.get('next') or '/'
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -78,7 +84,8 @@ def login_profile(request):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                return redirect('/')
+                next_link = request.session['next_link']
+                return redirect(next_link)
             return render(request, 'auth/login.html', {
                 'message': 'The user is not found or invalid password', 'form': form})
     return render(request, 'auth/login.html', {'form': form})
@@ -167,3 +174,9 @@ def login_ajax(request):
             return JsonResponse({'isAuthenticated': False, 'message': 'The user is not found or invalid password', },
                                 status=400)
     return HttpResponseNotAllowed
+
+
+def logout_ajax(request):
+    if request.user.is_authenticated:
+        logout(request)
+    return JsonResponse({'isLogout': True}, status=200)

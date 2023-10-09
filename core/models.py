@@ -40,6 +40,7 @@ class News(models.Model):
     tags = models.ManyToManyField(Tag, verbose_name='теги', related_name='news')
     date = models.DateTimeField(auto_now_add=True, verbose_name='дата добавление')
     is_published = models.BooleanField(default=True, verbose_name='публичность')
+    views = models.PositiveIntegerField('просмотры', default=0)
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE, verbose_name='автор', null=True)
     
     def __str__(self):
